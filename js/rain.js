@@ -47,6 +47,4 @@
     
     return self.init.apply(self, arguments);
   };
-  
-  o = new Rain('canvas', 500, 20, 1);
 })(window);
