@@ -6,3 +6,7 @@ A small rain engine based on [Raphaël](http://raphaeljs.com/).
 
 Written by [Julio Cesar Ody](http://awesomebydesign.com) and [Cameron Walsh](http://github.com/cwalsh)
 at [Rails Camp Perth 2010](http://railscamps.com/#au_per_nov_2010).
+
+# License
+
+Copyright © Julio Cesar Ody. MIT Licensed.
