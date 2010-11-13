@@ -14,6 +14,7 @@
           if (typeof config[property] == 'undefined') config[property] = defaults[property];
         };        
       }
+      self.config = config;
       var elt = document.getElementById(element);
       self.stage = {
           element:  elt,
@@ -22,14 +23,14 @@
         };
       self.canvas = Raphael(self.stage.element);
       self.offset = (Math.tan(config.angle * Math.PI / 180) * self.stage.height);
-      runEngine(config);
+      runEngine();
       return self;
     };
 
-    function runEngine(config) {
-      setInterval(function() { createDrop(config); }, 100 / config.intensity);
+    function runEngine() {
+      self.enginePid = setInterval(function() { createDrop(self.config); }, 100 / self.config.intensity);
     }
-
+    
     function randomStartingPoint(angle) {
       return Math.floor(Math.random() * (self.stage.width + self.offset));
     }
@@ -39,17 +40,29 @@
     }
 
     function createDrop(config) {
-      var positionMatrix = createPositionMatrix(config.angle, config.size),
+      var factor = Math.random(),
+        positionMatrix = createPositionMatrix(config.angle, config.size),
         drop = self.canvas.ellipse.apply(self.canvas, positionMatrix),
-        factor = Math.random(),
         layer = config.speed * (1 + factor),
-        cx = positionMatrix[0] - self.offset;
+        cx = positionMatrix[0] - (Math.tan(config.angle * Math.PI / 180) * self.stage.height);
       drop
         .attr({stroke: config.color, opacity: 1 - factor, fill: config.color})
         .rotate(config.angle)
         .animate({cy: self.stage.height, cx: cx}, layer, function() { drop.remove(); });
       return drop;
     }
+    
+    // "class" methods
+    self.setIntensity = function(intensity) {
+      clearInterval(self.enginePid);
+      self.config.intensity = intensity;
+      self.enginePid = setInterval(function() { createDrop(self.config); }, 100 / self.config.intensity);
+    };
+    
+    window.onresize = function() {
+      self.stage.height = window.innerHeight;
+      self.stage.width = window.innerWidth;
+    };
 
     return self.init.apply(self, arguments);
   };
