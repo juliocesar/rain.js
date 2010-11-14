@@ -20,11 +20,11 @@
       var elt = document.getElementById(element);
       self.stage = {
           element:  elt,
-          width:    elt.getBoundingClientRect().width,
-          height:   elt.getBoundingClientRect().height
+          width:    function() { return elt.getBoundingClientRect().width; },
+          height:   function() { return elt.getBoundingClientRect().height; }
         };
       self.canvas = Raphael(self.stage.element);
-      self.offset = (Math.tan(config.angle * Math.PI / 180) * self.stage.height);
+      self.offset = (Math.tan(config.angle * Math.PI / 180) * self.stage.height());
       runEngine();
       return self;
     };
@@ -34,7 +34,7 @@
     }
 
     function randomStartingPoint(angle) {
-      return Math.floor(Math.random() * (self.stage.width + self.offset));
+      return Math.floor(Math.random() * (self.stage.width() + self.offset));
     }
 
     function createPositionMatrix(angle, size) {
@@ -46,11 +46,11 @@
         positionMatrix = createPositionMatrix(config.angle, config.size),
         drop = self.canvas.ellipse.apply(self.canvas, positionMatrix),
         layer = config.speed * (1 + factor),
-        cx = positionMatrix[0] - (Math.tan(config.angle * Math.PI / 180) * self.stage.height);
+        cx = positionMatrix[0] - (Math.tan(config.angle * Math.PI / 180) * self.stage.height());
       drop
         .attr({stroke: config.color, opacity: 1 - factor, fill: config.color})
         .rotate(config.angle)
-        .animate({cy: self.stage.height, cx: cx}, layer, function() { drop.remove(); });
+        .animate({cy: self.stage.height(), cx: cx}, layer, function() { drop.remove(); });
       return drop;
     }
 
@@ -61,10 +61,7 @@
       self.enginePid = setInterval(function() { createDrop(self.config); }, 100 / self.config.intensity);
     };
 
-    window.onresize = function() {
-      self.stage.height = window.innerHeight;
-      self.stage.width = window.innerWidth;
-    };
+    window.onresize = function() { self.canvas.setSize(window.innerWidth, window.innerHeight); };
 
     return self.init.apply(self, arguments);
   };
